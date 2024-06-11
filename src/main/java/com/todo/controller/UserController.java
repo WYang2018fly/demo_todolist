@@ -3,6 +3,7 @@ package com.todo.controller;
 import com.todo.dto.task.TaskCreateDTO;
 import com.todo.dto.task.TaskDTO;
 import com.todo.dto.task.TaskUpdateDTO;
+import com.todo.expand.TaskExpander;
 import com.todo.service.TaskService;
 import com.todo.service.UserService;
 import com.todo.util.LoggerUtil;
@@ -16,12 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 @Slf4j
 public class UserController {
-    private final UserService userService;
     private final TaskService taskService;
 
     @Autowired
+    private TaskExpander taskExpanderProvider;
+
+    @Autowired
     public UserController(UserService userService, TaskService taskService) {
-        this.userService = userService;
         this.taskService = taskService;
     }
 
@@ -50,6 +52,7 @@ public class UserController {
         LoggerUtil.printStartCallMethodInfo("getTasks", pageable);
 
         Page<TaskDTO> taskDTOPage = taskService.getAllTasksByUserId(userId, pageable);
+        taskExpanderProvider.setPopulatedFieldsList("users").expandFields(taskDTOPage);
 
         Long endTime = System.currentTimeMillis();
         LoggerUtil.printMethodExecuteDuration("getTasks", beginTime, endTime);
@@ -82,6 +85,7 @@ public class UserController {
         LoggerUtil.printStartCallMethodInfo("getTask", userId, taskId);
 
         TaskDTO taskDTO = taskService.findTaskByTaskAndUserId(taskId, userId);
+        taskExpanderProvider.setPopulatedFieldsList("users").expandFields(taskDTO);
 
         Long endTime = System.currentTimeMillis();
         LoggerUtil.printMethodExecuteDuration("getTask", beginTime, endTime);

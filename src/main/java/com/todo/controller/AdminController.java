@@ -8,15 +8,16 @@ import com.todo.dto.task.TaskDTO;
 import com.todo.dto.task.TaskUpdateDTO;
 import com.todo.dto.user.UserCreateDTO;
 import com.todo.dto.user.UserDTO;
-import com.todo.entity.Task;
 import com.todo.enu.UserRoleEnu;
 import com.todo.exception.AuthException;
 import com.todo.exception.BizException;
+import com.todo.expand.TaskExpander;
 import com.todo.service.AuthService;
 import com.todo.service.TaskService;
 import com.todo.service.UserService;
 import com.todo.util.LoggerUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,9 @@ public class AdminController {
   private AuthService authService;
   private UserService userService;
   private TaskService taskService;
+
+  @Autowired
+  private TaskExpander taskExpanderProvider;
 
   @PostMapping("/token")
   public JWTResponseDTO authenticate(@RequestBody LoginDTO loginDTO) {
@@ -78,6 +82,7 @@ public class AdminController {
     LoggerUtil.printStartCallMethodInfo("getTasks", pageable);
 
     Page<TaskDTO> taskDTOPage = taskService.getAllTasks(pageable);
+    taskExpanderProvider.setPopulatedFieldsList("users").expandFields(taskDTOPage);
 
     Long endTime = System.currentTimeMillis();
     LoggerUtil.printMethodExecuteDuration("getTasks", beginTime, endTime);
@@ -104,6 +109,7 @@ public class AdminController {
     LoggerUtil.printStartCallMethodInfo("getTask", taskId);
 
     TaskDTO taskDTO = taskService.findTaskByTaskId(taskId);
+    taskExpanderProvider.setPopulatedFieldsList("users").expandFields(taskDTO);
 
     Long endTime = System.currentTimeMillis();
     LoggerUtil.printMethodExecuteDuration("getTask", beginTime, endTime);

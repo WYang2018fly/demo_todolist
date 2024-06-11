@@ -65,4 +65,10 @@ public class UserServiceImpl implements UserService {
         User userEntity = userRepository.findByRole(role).orElseThrow(() -> new BizException(UserExceptionConstant.USER_NOT_EXISTED));
         return UserMapper.INSTANCE.userEntityToUserDTO(userEntity);
     }
+
+    @Override
+    public UserDTO findUserById(String userId) {
+        User userEntity = userRepository.findById(userId).orElseThrow(() -> new BizException(UserExceptionConstant.USER_NOT_EXISTED));
+        return UserMapper.INSTANCE.userEntityToUserDTO(userEntity);
+    }
 }

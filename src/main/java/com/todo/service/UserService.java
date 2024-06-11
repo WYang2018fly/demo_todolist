@@ -14,4 +14,6 @@ public interface UserService {
     Page<UserDTO> getAllUsersByPage(Pageable pageable);
 
     UserDTO findUserByRole(String role);
+
+    UserDTO findUserById(String userId);
 }

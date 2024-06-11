@@ -14,5 +14,5 @@ public class TaskDTO extends CommonDTO {
   private Integer isCompleted;
   private String userId;
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private UserDTO user;
+  private UserDTO users;
 }
